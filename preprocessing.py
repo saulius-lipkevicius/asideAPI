@@ -35,13 +35,14 @@ def process_input(data):
     avgCitation_list = []
     hIndex_list = []
     paperCount_list = []
+   
 
     for info in author_metadata:
         countCitation_list.append(info['citationCount'])
         avgCitation_list.append(info['citationCount'] / info['paperCount'])
         hIndex_list.append(info['hIndex'])
         paperCount_list.append(info['paperCount'])
-
+        
     ## find exact normalization parameters
     countCitation_min, countCitation_max = min(countCitation_list), max(countCitation_list)
     avgCitation_list_min, avgCitation_list_max = min(avgCitation_list), max(avgCitation_list)
@@ -67,7 +68,7 @@ def process_input(data):
                 row_data['paperCount'] = (author_metadata[i]['paperCount'] - paperCount_list_min) / paperCount_list_max
                 row_data['avgCitation'] = ((row_data['countCitation'] / row_data['paperCount']) ) / avgCitation_list_max
 
-                row_data['measure'] = (row_data['countCitation'] + row_data['hIndex'] + row_data['paperCount'] + row_data['avgCitation']) / 4
+                row_data['measure'] = round((row_data['countCitation'] + row_data['hIndex'] * 3 + row_data['paperCount'] + row_data['avgCitation'] * 2) * 100 / 7, 2)
                 final_list.append(row_data)
         except:
             pass
@@ -88,11 +89,11 @@ def process_input(data):
                 vector2 = text_to_vector(comparing_abstract['abstract'])
 
                 cosine = get_cosine(vector1, vector2)
-
+            
                 simMeasure += cosine
             except:
                     pass
-        main_abstract['cosSimilarity'] = simMeasure / len(final_list)
+        main_abstract['cosSimilarity'] = round(simMeasure * 1000 / len(final_list), 2)
 
         
     # Save final json
